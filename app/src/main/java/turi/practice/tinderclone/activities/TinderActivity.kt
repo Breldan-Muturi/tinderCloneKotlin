@@ -1,5 +1,7 @@
-package turi.practice.tinderclone
+package turi.practice.tinderclone.activities
 
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -7,8 +9,9 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.lorentzos.flingswipe.SwipeFlingAdapterView
 import kotlinx.android.synthetic.main.activity_main.*
+import turi.practice.tinderclone.R
 
-class MainActivity : AppCompatActivity() {
+class TinderActivity : AppCompatActivity() {
 
     private var al = ArrayList<String>()
     private var arrayAdapter: ArrayAdapter<String>? = null
@@ -27,7 +30,9 @@ class MainActivity : AppCompatActivity() {
         al.add("java");
 
         //choose your favorite adapter
-        arrayAdapter = ArrayAdapter(this, R.layout.item, R.id.helloText, al);
+        arrayAdapter = ArrayAdapter(this,
+            R.layout.item,
+            R.id.helloText, al);
 
         //set the listener and the adapter
         frame.adapter = arrayAdapter
@@ -40,12 +45,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onLeftCardExit(p0: Any?) {
-                Toast.makeText(this@MainActivity, "Left!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this@TinderActivity, "Left!", Toast.LENGTH_SHORT).show();
 
             }
 
             override fun onRightCardExit(p0: Any?) {
-                Toast.makeText(this@MainActivity, "Right!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this@TinderActivity, "Right!", Toast.LENGTH_SHORT).show();
 
             }
 
@@ -62,6 +67,11 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
+    companion object{
+        fun newIntent(context: Context?) = Intent(context, TinderActivity::class.java)
+    }
+
 }
 
 

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "245529726269",
+    "firebase_url": "https://social-8658c.firebaseio.com",
+    "project_id": "social-8658c",
+    "storage_bucket": "social-8658c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245529726269:android:95580b5b2399fc7fac4954",
+        "android_client_info": {
+          "package_name": "turi.practice.tinderclone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "245529726269-g740uuo0mrk3su9n927ngu6snqip5mmu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "turi.practice.tinderclone",
+            "certificate_hash": "6647d617094e928c20ccecd4a93ed23edb46b68e"
+          }
+        },
+        {
+          "client_id": "245529726269-cub012mvohtv7ssu7f9rjth3u5bd8h2q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgv7UPN5g3RbS9D12pMPAIjAnbYf6G024"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "245529726269-cub012mvohtv7ssu7f9rjth3u5bd8h2q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

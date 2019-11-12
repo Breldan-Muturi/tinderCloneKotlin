@@ -22,5 +22,8 @@ class StartUpActivity : AppCompatActivity() {
         startActivity(SignupActivity.newIntent(this))
     }
 
+    companion object {
+        fun newIntent(context: Context?) = Intent(context, StartUpActivity::class.java)
+    }
 
 }

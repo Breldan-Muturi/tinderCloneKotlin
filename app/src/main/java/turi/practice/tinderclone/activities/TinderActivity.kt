@@ -1,74 +1,171 @@
 package turi.practice.tinderclone.activities
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import com.google.android.material.tabs.TabLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import com.lorentzos.flingswipe.SwipeFlingAdapterView
 import kotlinx.android.synthetic.main.activity_main.*
+import org.intellij.lang.annotations.JdkConstants
 import turi.practice.tinderclone.R
+import turi.practice.tinderclone.fragments.MatchesFragment
+import turi.practice.tinderclone.fragments.ProfileFragment
+import turi.practice.tinderclone.fragments.SwipeFragment
+import turi.practice.tinderclone.util.DATA_CHATS
+import turi.practice.tinderclone.util.DATA_USERS
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 
-class TinderActivity : AppCompatActivity() {
+const val REQUEST_C0DE_PHOTO = 1234
 
-    private var al = ArrayList<String>()
-    private var arrayAdapter: ArrayAdapter<String>? = null
-    private var i = 0
+class TinderActivity : AppCompatActivity(), TinderCallBack {
 
+    private val firebaseAuth = FirebaseAuth.getInstance()
+    private val userId = firebaseAuth.currentUser?.uid
+    private lateinit var userDatabase: DatabaseReference
+    private lateinit var chatDatabase: DatabaseReference
+
+    private var profileFragment: ProfileFragment? = null
+    private var swipeFragment: SwipeFragment? = null
+    private var matchesFragment: MatchesFragment? = null
+
+    private var profileTab: TabLayout.Tab? = null
+    private var swipeTab: TabLayout.Tab? = null
+    private var matchesTab: TabLayout.Tab? = null
+
+    private var resultImageUrl: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //add the view via xml or programmatically
+        if(userId.isNullOrEmpty()){
+            onSignout()
+        }
 
-        al.add("php");
-        al.add("c");
-        al.add("python");
-        al.add("java");
+        userDatabase = FirebaseDatabase.getInstance().reference.child(DATA_USERS)
+        chatDatabase = FirebaseDatabase.getInstance().reference.child(DATA_CHATS)
 
-        //choose your favorite adapter
-        arrayAdapter = ArrayAdapter(this,
-            R.layout.item,
-            R.id.helloText, al);
+        profileTab = navigationTabs.newTab()
+        swipeTab = navigationTabs.newTab()
+        matchesTab = navigationTabs.newTab()
 
-        //set the listener and the adapter
-        frame.adapter = arrayAdapter
-        frame.setFlingListener(object : SwipeFlingAdapterView.onFlingListener {
-            override fun removeFirstObjectInAdapter() {
-                Log.d("LIST", "removed object!");
-                al.removeAt(0);
-                arrayAdapter?.notifyDataSetChanged();
+        profileTab?.icon = ContextCompat.getDrawable(this, R.drawable.tab_profile)
+        swipeTab?.icon = ContextCompat.getDrawable(this, R.drawable.tab_swipe)
+        matchesTab?.icon = ContextCompat.getDrawable(this, R.drawable.tab_matches)
+
+        navigationTabs.addTab(profileTab!!)
+        navigationTabs.addTab(swipeTab!!)
+        navigationTabs.addTab(matchesTab!!)
+
+        navigationTabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                onTabSelected(tab)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when (tab) {
+                    profileTab -> {
+                        if (profileFragment == null) {
+                            profileFragment = ProfileFragment()
+                            profileFragment!!.setCallBack(this@TinderActivity)
+                        }
+                        replaceFragment(profileFragment!!)
+                    }
+                    swipeTab -> {
+                        if (swipeFragment == null) {
+                            swipeFragment = SwipeFragment()
+                            swipeFragment!!.setCallBack(this@TinderActivity)
+                        }
+                        replaceFragment(swipeFragment!!)
+
+                    }
+                    matchesTab -> {
+                        if (matchesFragment == null) {
+                            matchesFragment = MatchesFragment()
+                            matchesFragment!!.setCallBack(this@TinderActivity)
+                        }
+                        replaceFragment(matchesFragment!!)
+
+                    }
+                }
 
             }
 
-            override fun onLeftCardExit(p0: Any?) {
-                Toast.makeText(this@TinderActivity, "Left!", Toast.LENGTH_SHORT).show();
-
-            }
-
-            override fun onRightCardExit(p0: Any?) {
-                Toast.makeText(this@TinderActivity, "Right!", Toast.LENGTH_SHORT).show();
-
-            }
-
-            override fun onAdapterAboutToEmpty(p0: Int) {
-                al.add("XML $i")
-                arrayAdapter?.notifyDataSetChanged();
-                Log.d("LIST", "notified");
-                i++
-
-            }
-
-            override fun onScroll(p0: Float) {
-
-            }
         })
+        profileTab?.select()
+
     }
 
-    companion object{
+    fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .commit()
+    }
+
+    override fun onSignout() {
+        firebaseAuth.signOut()
+        startActivity(StartUpActivity.newIntent(this))
+        finish()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK && requestCode == REQUEST_C0DE_PHOTO){
+            resultImageUrl = data?.data
+            storeImage()
+        }
+    }
+
+    fun storeImage(){
+        if(resultImageUrl != null && userId != null){
+            val filePath = FirebaseStorage.getInstance().reference.child("profileImage").child(userId)
+            var bitmap: Bitmap? = null
+            try{
+                bitmap = MediaStore.Images.Media.getBitmap(application.contentResolver, resultImageUrl)
+            } catch (e: IOException){ e.printStackTrace() }
+            val baos = ByteArrayOutputStream()
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 20, baos)
+            val data = baos.toByteArray()
+            val uploadTask = filePath.putBytes(data)
+            uploadTask.addOnFailureListener{ e -> e.printStackTrace() }
+            uploadTask.addOnSuccessListener { taskSnapshot ->
+                filePath.downloadUrl
+                    .addOnSuccessListener { uri ->
+                        profileFragment?.updateImageUri(uri.toString())
+                    }
+                    .addOnFailureListener{ e -> e.printStackTrace()}
+            }
+        }
+    }
+    override fun onGetUserId(): String = userId!!
+    override fun getUserDatabase(): DatabaseReference = userDatabase
+    override fun getChatDatabase(): DatabaseReference = chatDatabase
+    override fun profileComplete() { swipeTab?.select() }
+    override fun startActivityForPhoto() {
+        val intent = Intent(Intent.ACTION_PICK)
+        //Tells android system we want an image of any type
+        intent.type = "image/*"
+        startActivityForResult(intent, REQUEST_C0DE_PHOTO)
+    }
+    companion object {
         fun newIntent(context: Context?) = Intent(context, TinderActivity::class.java)
     }
 

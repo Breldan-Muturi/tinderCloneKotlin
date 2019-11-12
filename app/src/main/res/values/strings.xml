@@ -3,11 +3,26 @@
     <string name="hello_world">Hello World</string>
     <string name="startup_button_login">Log in</string>
     <string name="startup_button_signup">Sign Up</string>
-    <string name="hint_email">Email</string>
+    <string name="email">Email</string>
     <string name="hint_password">Password</string>
     <string name="login_button">LOGIN</string>
     <string name="signup_button_text">Sign up</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="matches_testing">Matches testing</string>
+    <string name="swipes_testing">Swipes Testing</string>
+    <string name="hint_name">name</string>
+    <string name="hint_age">age</string>
+    <string name="hint_gender">I am a</string>
+    <string name="hint_man">man</string>
+    <string name="hint_woman">woman</string>
+    <string name="hint_preferred_gender">Looking for a</string>
+    <string name="hint_email">Email</string>
+    <string name="button_sign_out">Sign Out</string>
+    <string name="button_apply">Apply</string>
+    <string name="error_profile_incomplete">Please complete your profile</string>
+    <string name="no_available_users">No available users</string>
+    <string name="send_button_text">Send</string>
+    <string name="hint_message">Message</string>
 </resources>

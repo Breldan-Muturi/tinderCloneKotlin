@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -15,19 +14,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_gravity="center"
         app:srcCompat="@drawable/tinder_clone_logo"
-        android:layout_margin="@dimen/startup_logo_margin"/>
+        android:layout_margin="@dimen/startup_logo_margin" />
 
     <Button
         style="@style/StandardButton"
         android:layout_width="@dimen/standard_width"
         android:layout_height="@dimen/standard_height"
         android:text="@string/startup_button_login"
-        android:onClick="onLogin"/>
+        android:onClick="onLogin" />
+
     <Button
         style="@style/StandardButton"
         android:layout_width="@dimen/standard_width"
         android:layout_height="@dimen/standard_height"
         android:text="@string/startup_button_signup"
-        android:onClick="onSignup"/>
+        android:onClick="onSignup" />
 </LinearLayout>
